@@ -1,0 +1,15 @@
+extends layout
+block style
+  link(rel="shortcut icon", href="favicon.ico", type="image/x-icon")
+block content
+  h1=title
+  p Welcome to #{title}
+
+block script
+  script.
+    (function(){
+      alert(document.getElementsByTagName('h1')[0].innerHTML);
+    })();
+    
+
+
