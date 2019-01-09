@@ -33,7 +33,7 @@ router.post('/genre/:id/delete', genre.genre_delete_post);
 router.get('/genre/:id/update', genre.genre_update_get);
 router.post('/genre/:id/update', genre.genre_update_post);
 router.get('/genre/:id', genre.genre_detail);
-router.get('/genre', genre.genre_list);
+router.get('/genres', genre.genre_list);
 // bookInstance
 router.get('/bookInstance/create', bookInstance.bookinstance_create_get);
 router.post('/bookInstance/create', bookInstance.bookinstance_create_post);
