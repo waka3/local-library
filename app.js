@@ -1,5 +1,15 @@
 var createError = require('http-errors');
 var express = require('express');
+// 引入mongoose
+var mongoose = require('mongoose');
+// 数据库地址，格式：mongodb://your_username:your_password@your_dabase_url
+var mongoDB = 'mongodb://waka:2m2KnFZHMSMTQ6Z@ds119660.mlab.com:19660/local-library';
+// 连接数据库
+mongoose.connect(mongoDB, { useNewUrlParser: true });
+mongoose.Promise = global.Promise;
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'))
+
 var path = require('path');
 const favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
