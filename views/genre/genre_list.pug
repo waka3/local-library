@@ -1,0 +1,14 @@
+extends ../layout
+
+block content
+  h1= title
+
+  ul
+    if genre_list && genre_list.length > 0
+    each val in genre_list
+      li
+        a(href=val.url) #{val.name}
+    else
+      li No Genre List    
+      
+    

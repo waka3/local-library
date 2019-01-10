@@ -1,8 +1,11 @@
-var Book = require('../models/book');
-var Author = require('../models/author');
-var Genre = require('../models/genre');
-var BookInstance = require('../models/bookInstance');
-var async = require('async');
+const Book = require('../models/book');
+const Author = require('../models/author');
+const Genre = require('../models/genre');
+const BookInstance = require('../models/bookInstance');
+const path = require('path');
+const fs = require('fs');
+const pug = require('pug');
+const async = require('async');
 
 exports.index = function (req, res) {
     async.parallel({
@@ -33,8 +36,37 @@ exports.book_list = function (req, res) {
 };
 
 // Display detail page for a specific book.
-exports.book_detail = function (req, res) {
-    res.send('NOT IMPLEMENTED: Book detail: ' + req.params.id);
+exports.book_detail = function (req, res, next) {
+    async.parallel({
+        book: function (callback) {
+            Book.findById(req.params.id).populate('author').populate('genre').exec(callback);
+        },
+        book_instance: function (callback) {
+            BookInstance.find({ 'book': req.params.id }).exec(callback);
+        }
+    }, function (err, results) {
+        if (err) {
+            return next(err);
+        }
+        if( results.book == null){
+            var err = new Error('Book not found');
+            err.status = 404;
+            return next(err);
+        }
+        let data = {
+            title: 'Title',
+            book: results.book,
+            book_instances: results.book_instance
+        }
+        // pug渲染的效果页
+        res.render('../views/book/book_detail', data);
+        // pug生成静态的html页面
+        let htmlPath = path.join(__dirname, '..', '/static', '/book/', `${req.params.id}.html`);
+        let html = pug.renderFile(path.join(__dirname, '..', '/views', '/book/', 'book_detail.pug'), data);
+        fs.writeFile(htmlPath, html, 'utf-8', (error) => {
+            if (error) throw error;
+        })
+    })
 };
 
 // Display book create form on GET.
