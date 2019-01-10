@@ -1,6 +1,8 @@
 const Genre = require('../models/genre');
 const book = require('../models/book');
 const async = require('async');
+const { body, validationResult } = require('express-validator/check');
+const { sanitizeBody } = require('express-validator/filter');
 
 // Display list of all Genre.
 exports.genre_list = function (req, res, next) {
@@ -19,17 +21,17 @@ exports.genre_list = function (req, res, next) {
 // Display detail page for a specific Genre.
 exports.genre_detail = function (req, res, next) {
     async.parallel({
-        genre: function(callback){
+        genre: function (callback) {
             Genre.findById(req.params.id).exec(callback)
         },
-        genre_books: function(callback){
-            book.find({'genre': req.params.id}).exec(callback)
+        genre_books: function (callback) {
+            book.find({ 'genre': req.params.id }).exec(callback)
         }
-    }, function(err, results){
-        if(err){
+    }, function (err, results) {
+        if (err) {
             return next(err);
         }
-        if(results.genre === null){
+        if (results.genre === null) {
             var err = new Error('Genre not found');
             err.status = 404;
             return next(err);
@@ -45,13 +47,25 @@ exports.genre_detail = function (req, res, next) {
 
 // Display Genre create form on GET.
 exports.genre_create_get = function (req, res) {
-    res.send('NOT IMPLEMENTED: Genre create GET');
+    res.render('../views/genre/genre_form', { title: 'Create Genre' })
 };
 
 // Handle Genre create on POST.
-exports.genre_create_post = function (req, res) {
-    res.send('NOT IMPLEMENTED: Genre create POST');
-};
+exports.genre_create_post = [
+    body('name', 'Genre name required').isLength({ min: 1 }).trim(),
+    sanitizeBody('name').trim().escape(),
+    (req, res, next) => {
+        // Extract the validation errors from a request.
+        const errors = validationResult(req);
+        // Create a genre object with escaped and trimmed data.
+        var genre = new Genre(
+            { name: req.body.name }
+        );
+        if (!errors.isEmpty()){
+            res.render('genre_form', {title: 'Create Genre'})
+        }
+    }
+];
 
 // Display Genre delete form on GET.
 exports.genre_delete_get = function (req, res) {
