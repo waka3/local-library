@@ -91,7 +91,7 @@ exports.book_create_post = function (req, res, next) {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     },
-    data: data
+    data: JSON.stringify(data)
   }, (error, response, body) => {
     console.log(response);
     if (!error && response.statusCode == 200) {
