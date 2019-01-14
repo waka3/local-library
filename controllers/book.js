@@ -28,17 +28,25 @@ exports.index = function (req, res) {
       Genre.count({}, callback);
     },
   }, function (err, results) {
-    console.log(results);
     res.render('index', { title: 'Local Library Home', error: err, data: results });
   });
 }
 
-// Display list of all books.
+// 查 书列表
 exports.book_list = function (req, res) {
-  res.send('NOT IMPLEMENTED: Book list');
+  Book.find({}, 'title author').populate('author').exec(function (err, results) {
+    if (err) {
+      return next(err);
+    }
+    let data = {
+      title: 'Book list',
+      book_list: results
+    }
+    res.render('../views/book/book_list.pug', data);
+  })
 };
 
-// Display detail page for a specific book.
+// 查 书详情
 exports.book_detail = function (req, res, next) {
   async.parallel({
     book: function (callback) {
@@ -72,39 +80,97 @@ exports.book_detail = function (req, res, next) {
   })
 };
 
-// Display book create form on GET.
+// 查
 exports.book_create_get = function (req, res) {
-  res.render('../views/book/book_form', { title: 'Create Book' })
-};
-
-// Handle book create on POST.
-exports.book_create_post = function (req, res, next) {
-  let document = Array.prototype.slice.call(req.body.document);
-  let data = {
-    document: document
-  }
-  let url = 'https://ray666.cn/api/ceshi/mongoInsert';
-  request({
-    url: url,
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
+  async.parallel({
+    authors: function (callback) {
+      Author.find(callback);
     },
-    data: JSON.stringify(data)
-  }, (error, response, body) => {
-    console.log(response);
-    if (!error && response.statusCode == 200) {
-      res.redirect(req.originalUrl)
-    } else {
-      // alert('数据错误');
+    genres: function (callback) {
+      Genre.find(callback);
     }
-  });
+  }, function (err, results) {
+    if (err) {
+      return next(err);
+    }
+    let data = {
+      title: 'Create Book',
+      authors: results.authors,
+      genres: results.genres
+    }
+    res.render('../views/book/book_form', data);
+  })
 };
 
-// Display book delete form on GET.
+// 增 书
+exports.book_create_post = [
+  (req, res, next) => {
+    if (!(req.body.genre instanceof Array)) {
+      if (typeof req.body.genre === 'undefined')
+        req.body.genre = [];
+      else
+        req.body.genre = new Array(req.body.genre);
+    }
+    next();
+  },
+  body('title', 'Title must not be empty.').isLength({ min: 1 }).trim(),
+  body('author', 'Author must not be empty.').isLength({ min: 1 }).trim(),
+  body('summary', 'Summary must not be empty.').isLength({ min: 1 }).trim(),
+  body('isbn', 'ISBN must not be empty').isLength({ min: 1 }).trim(),
+  sanitizeBody('*').trim().escape(),
+  (req, res, next) => {
+    console.log(req.body);
+    const errors = validationResult(req);
+    var book = new Book({
+      title: req.body.title,
+      author: req.body.author,
+      summary: req.body.summary,
+      isbn: req.body.isbn,
+      genre: req.body.genre
+    })
+    if (!errors.isEmpty()) {
+      async.parallel({
+        authors: function (callback) {
+          Author.find(callback);
+        },
+        genres: function (callback) {
+          Genre.find(callback);
+        },
+      }, function (err, results) {
+        if (err) { return next(err); }
+
+        // Mark our selected genres as checked.
+        for (let i = 0; i < results.genres.length; i++) {
+          if (book.genre.indexOf(results.genres[i]._id) > -1) {
+            results.genres[i].checked = 'true';
+          }
+        }
+        let data = {
+          title: 'Create Book',
+          authors: results.authors,
+          genres: results.genres,
+          book: book,
+          errors: errors.array()
+        }
+        console.log(data);
+        res.render('../views/book/book_form', data);
+      });
+      return;
+    } else {
+      // Data from form is valid. Save book.
+      book.save(function (err) {
+        if (err) { return next(err); }
+        //successful - redirect to new book record.
+        res.redirect(book.url);
+      });
+    }
+  }
+
+]
+
+// 查 书
 exports.book_delete_get = function (req, res) {
-  res.send('NOT IMPLEMENTED: Book delete GET');
+  
 };
 
 // Handle book delete on POST.

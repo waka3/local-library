@@ -18,10 +18,10 @@ var bookSchema = new Schema({
     type: String,
     required: true
   },
-  genre: {
+  genre: [{
     type: Schema.ObjectId,
     ref: 'Genre',
-  }
+  }]
 })
 bookSchema.virtual('url').get(function () {
   return '/catalog/book/' + this._id;

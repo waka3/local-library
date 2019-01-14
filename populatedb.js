@@ -68,7 +68,7 @@ function bookCreate(title, summary, isbn, author, genre, cb) {
     isbn: isbn
     // genre: genre
   }
-  // if (genre != false) bookdetail.genre = genre;  
+  if (genre != false) bookdetail.genre = genre;  
 
   var book = new Book(bookdetail);
   book.save(function (err) {
@@ -166,7 +166,7 @@ function createBooks(cb) {
       bookCreate('Test Book 1', 'Summary of test book 1', 'ISBN111111', authors[4], [genres[0], genres[1]], callback);
     },
     function (callback) {
-      bookCreate('Test Book 2', 'Summary of test book 2', 'ISBN222222', authors[4],  [genres[0],], callback)
+      bookCreate('Test Book 2', 'Summary of test book 2', 'ISBN222222', authors[4],  false, callback)
     }
   ],
     // optional callback
