@@ -9,7 +9,7 @@ block content
       select#book.form-control(type='select' placeholder='Select book' name='book' required='true')
         for book in book_list
           if bookinstance
-            option(value=book._id selected=(bookinstance.book.toString()==book._id.toString() ? 'selected' : false)) #{book.title}
+            option(value=book._id selected=(bookinstance.book._id.toString()==book._id.toString()? 'selected' : false)) #{book.title}
           else
             option(value=book._id) #{book.title}
     div.form-group
@@ -21,10 +21,10 @@ block content
     div.form-group
       label(for='status') Status:
       select#status.form-control(type='select' placeholder='Select status' name='status' required='true')
-        option(value='Maintenance') Maintenance
-        option(value='Available') Available
-        option(value='Loaned') Loaned
-        option(value='Reserved') Reserved
+        option(value='Maintenance' selected=(bookinstance && bookinstance.status === 'Maintenance'? 'selected': false)) Maintenance
+        option(value='Available' selected=(bookinstance && bookinstance.status === 'Available'? 'selected': false)) Available
+        option(value='Loaned' selected=(bookinstance && bookinstance.status === 'Loaned'? 'selected': false)) Loaned
+        option(value='Reserved' selected=(bookinstance && bookinstance.status === 'Reserved'? 'selected': false)) Reserved
     button.btn.btn-primary(type='submit') Submit
 
   if errors 

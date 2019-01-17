@@ -1,0 +1,27 @@
+extends ../layout
+block content
+
+  h1 #{title}
+  h3 #{book.title}
+  if book_instances.length > 0
+    p #[strong 删除书本前请先删除本书关联的书本实例]
+
+    div(style='margin-left:20px;margin-top:20px')
+      h4 书本实例
+      if book_instances && book_instances.length > 0
+        each val in book_instances
+          hr
+          if val.status=='Available'
+            p.text-success #{val.status}
+          else if val.status=='Maintenance'
+            p.text-danger #{val.status}
+          else
+            p.text-warning #{val.status}
+      else
+        p 当前没有本书的书本实例
+  else
+    p 确定删除本书?
+    form(method="POST")
+      div.form-group
+        input#bookId.form-control(type='hidden',name='bookId', required='true', value=book._id )
+      button.btn.btn-primary(type='submit') 删除

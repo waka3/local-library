@@ -13,7 +13,7 @@ var AuthorSchema = new Schema({
     max: 100
   },
   date_of_birth: Date,
-  data_of_death: Date
+  date_of_death: Date
 });
 
 AuthorSchema.virtual('name').get(function () {
@@ -25,8 +25,8 @@ AuthorSchema.virtual('url').get(function () {
 AuthorSchema.virtual('due_date_of_birth').get(function () {
   return moment(this.date_of_birth).format('YYYY-MM-DD hh:mm:ss');
 });
-AuthorSchema.virtual('due_data_of_death').get(function () {
-  return moment(this.data_of_death).format('YYYY-MM-DD hh:mm:ss');
+AuthorSchema.virtual('due_date_of_death').get(function () {
+  return moment(this.date_of_death).format('YYYY-MM-DD hh:mm:ss');
 });
 
 module.exports = mongoose.model('Author', AuthorSchema);

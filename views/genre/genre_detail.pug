@@ -15,6 +15,11 @@ block content
           dd #{val.summary}
       else
         p This genre has no books
+  hr
+  p
+    a(href=genre.url + '/delete') 删除分类
+  p 
+    a(href=genre.url + '/update') 修改分类
 
         
       

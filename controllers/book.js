@@ -165,25 +165,167 @@ exports.book_create_post = [
       });
     }
   }
-
 ]
 
 // 查 书
 exports.book_delete_get = function (req, res) {
-  
+  async.parallel({
+    book: function (callback) {
+      Book.findById(req.params.id).exec(callback)
+    },
+    book_instances: function (callback) {
+      BookInstance.find({ 'book': req.params.id }).exec(callback)
+    }
+  }, function (err, results) {
+    if (err) {
+      return next(err)
+    }
+    let data = {
+      title: 'Delete Book',
+      book: results.book,
+      book_instances: results.book_instances
+    }
+    res.render('../views/book/book_delete.pug', data);
+  })
 };
 
-// Handle book delete on POST.
-exports.book_delete_post = function (req, res) {
-  res.send('NOT IMPLEMENTED: Book delete POST');
+// 删除
+exports.book_delete_post = function (req, res, next) {
+  async.parallel({
+    book: function (callback) {
+      Book.findById(req.body.bookId).exec(callback)
+    },
+    book_instances: function (callback) {
+      BookInstance.find({ 'book': req.body.bookId }).exec(callback)
+    }
+  }, function (err, results) {
+    if (err) {
+      return next(err);
+    }
+    if (results.book_instances.length > 0) {
+      let data = {
+        title: 'Delete Book',
+        book: results.book,
+        book_instances: results.book_instances
+      }
+      res.render('../views/book/book_delete.pug', data);
+      return;
+    } else {
+      Book.findByIdAndRemove(req.body.bookId, function deleteBook(err) {
+        if (err) {
+          return next(err);
+        }
+        res.redirect('/catalog/books')
+      })
+    }
+  })
 };
 
-// Display book update form on GET.
+// 查
 exports.book_update_get = function (req, res) {
-  res.send('NOT IMPLEMENTED: Book update GET');
+  async.parallel({
+    book: function (callback) {
+      Book.findById(req.params.id).populate('author').populate('genre').exec(callback)
+    },
+    authors: function (callback) {
+      Author.find(callback)
+    },
+    genres: function (callback) {
+      Genre.find(callback)
+    }
+  }, function (err, results) {
+    console.log(results.book)
+    if (err) {
+      return next(err)
+    }
+    if (results.book == null) {
+      var err = new Error('Book not found');
+      err.status = 404;
+      return next(err);
+    }
+    // 标记当前书本的类别
+    for (var i = 0; i < results.genres.length; i++) {
+      for (var j = 0; j < results.book.genre.length; j++) {
+        if (results.genres[i]._id.toString() == results.book.genre[j]._id.toString()) {
+          results.genres[i].checked = 'true';
+        }
+      }
+    }
+    let data = {
+      title: 'Update Book',
+      book: results.book,
+      authors: results.authors,
+      genres: results.genres
+      }
+      console.log(data.book.author.id);
+      console.log(data.authors[0]);
+    res.render('../views/book/book_form.pug', data);
+  })
 };
 
-// Handle book update on POST.
-exports.book_update_post = function (req, res) {
-  res.send('NOT IMPLEMENTED: Book update POST');
-};
+// 修改 
+exports.book_update_post = [
+  (req, res, next) => {
+    if (!(req.body.genre instanceof Array)) {
+      if (typeof req.body.genre === 'undefined')
+        req.body.genre = [];
+      else
+        req.body.genre = new Array(req.body.genre);
+    }
+    next();
+  },
+  body('title', 'Title must not be empty.').isLength({ min: 1 }).trim(),
+  body('author', 'Author must not be empty.').isLength({ min: 1 }).trim(),
+  body('summary', 'Summary must not be empty.').isLength({ min: 1 }).trim(),
+  body('isbn', 'ISBN must not be empty').isLength({ min: 1 }).trim(),
+  sanitizeBody('*').trim().escape(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    var book = new Book({
+      title: req.body.title,
+      author: req.body.author,
+      summary: req.body.summary,
+      isbn: req.body.isbn,
+      genre: (typeof req.body.genre === 'undefined') ? [] : req.body.genre,
+      _id: req.params.id
+    })
+    if (!errors.isEmpty()) {
+      async.parallel({
+        authors: function (callback) {
+          Author.find(callback);
+        },
+        genres: function (callback) {
+          Genre.find(callback);
+        },
+      }, function (err, results) {
+        if (err) { return next(err); }
+        // 标记当前书本的作者
+        for (let i = 0; i < results.authors.length; i++) {
+          if (book.author.indexOf(results.authors[i]._id) > -1) {
+            results.authors[i].selected = true;
+          }
+        }
+        // 标记当前书本的类别
+        for (let i = 0; i < results.genres.length; i++) {
+          if (book.genre.indexOf(results.genres[i]._id) > -1) {
+            results.genres[i].checked = 'true';
+          }
+        }
+        let data = {
+          title: 'Update Book',
+          authors: results.authors,
+          genres: results.genres,
+          book: book,
+          errors: errors.array()
+        }
+        res.render('../views/book/book_form', data);
+      });
+      return;
+    } else {
+      Book.findByIdAndUpdate(req.params.id, book, {}, function (err, thebook) {
+        if (err) { return next(err); }
+        res.redirect(thebook.url);
+      });
+    }
+  }
+]

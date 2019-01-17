@@ -29,4 +29,9 @@ block content
           a(href=val.url) #{val._id}
     else
       p There are no copies of this book in the library.
+  hr
+  p
+    a(href=book.url + '/delete') 删除本书
+  p 
+    a(href=book.url + '/update') 修改本书
     
