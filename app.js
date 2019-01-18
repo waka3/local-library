@@ -17,10 +17,8 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const stylus = require('stylus');
 
-
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
 const catalogRouter = require('./routes/catalog');
+const clear_cache = require('./routes/clear_cache');
 
 const app = express();
 
@@ -34,9 +32,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/catalog', catalogRouter);
+app.use('/clear/', clear_cache);
+
+//清除静态缓存(每两个小时清除一次缓存)
+setInterval(() => {
+  request('http://127.0.0.1/clear/bookCache?id=all');
+}, 1000 * 60 * 60 * 2);
 
 // 使用stylus中间件将stylus编译成css
 app.use(stylus.middleware({
