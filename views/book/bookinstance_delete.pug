@@ -1,0 +1,11 @@
+extends ../layout
+block content
+
+  h1 #{title}
+  h3 #[strong ID: #{bookinstance._id}]
+
+  p 确定删除此实例?
+  form(method="POST")
+    div.form-group
+      input#bookinstanceId.form-control(type='hidden',name='bookinstanceId', required='true', value=bookinstance._id )
+    button.btn.btn-primary(type='submit') 删除

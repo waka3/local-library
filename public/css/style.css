@@ -1,5 +1,1 @@
-.sidebar-nav{
-  margin-top: 20px;
-  padding: 0;
-  list-style: none
-}
+strong{font-weight:bold}ul li,dl dt{list-style:none}body{background:#f8f8f8}.container-fluid{background:#fff}.sidebar-nav li{width:120px;height:34px;line-height:34px;text-align:center;background-color:#337ab7;border-color:#2e6da4;margin-bottom:20px}

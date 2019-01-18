@@ -97,19 +97,34 @@ exports.bookinstance_delete_get = function (req, res, next) {
       return next(err)
     }
     if (results === null) {
-      var err = new Error('this is no bookinstance');
-      err.status = '404';
-      return next(err);
+      res.redirect('/catalog/bookinstances');
     }
     var data = {
-      title: ''
+      title: 'Delete BookInstance',
+      bookinstance: results
     }
     res.render('../views/book/bookinstance_delete', data);
   })
 };
 
-exports.bookinstance_delete_post = function (req, res) {
-
+exports.bookinstance_delete_post = function (req, res, next) {
+  BookInstance.findById(req.body.bookinstanceId).exec(function (err, results) {
+    if (err) {
+      return next(err)
+    }
+    if (results === null) {
+      var err = new Error('this is no bookinstance');
+      err.status = '404';
+      return next(err);
+    } else {
+      BookInstance.findByIdAndRemove(req.body.bookinstanceId, function (err) {
+        if (err) {
+          return next(err)
+        }
+        res.redirect('/catalog/bookinstances');
+      })
+    }
+  })
 };
 
 exports.bookinstance_update_get = function (req, res) {

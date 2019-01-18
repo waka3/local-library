@@ -6,33 +6,34 @@ html(lang='en')
     link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js')
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')
-    link(rel='stylesheet', href='/css/style.css')
+    link(rel='stylesheet', href='/iconfont/iconfont.css')
+    link(rel='stylesheet', href='/css/common.css')
     block style
   body
-    .container-fluid
-      .row
-        .col-sm-2
-          block sidebar
-            ul.sidebar-nav
-              li
-                a(href="/catalog") Home
-              li
-                a(href="/catalog/books") All Books
-              li
-                a(href="/catalog/authors") All authors
-              li
-                a(href="/catalog/genres") All genres
-              li
-                a(href="/catalog/bookinstances") All bookinstances
-              li
-                hr
-              li 
-                a(href='/catalog/author/create') Create new author
-              li 
-                a(href='/catalog/genre/create') Create new genre
-              li 
-                a(href='/catalog/book/create') Create new book
-              li 
-                a(href='/catalog/bookinstance/create') Create new book instance (copy)
-        .col-sm-10
-          block content
+    h1.siteTitle Local Library
+    //- div.container-wrap
+    block sidebar
+      //- span#menu-icon.iconfont.icon-caidan.menu
+      #menu.sidebar-nav
+        ul
+          li
+            a(href="/catalog") 主页
+          li
+            a(href="/catalog/books") 书单列表
+          li
+            a(href="/catalog/authors") 作者列表
+          li
+            a(href="/catalog/genres") 类别列表
+          li
+            a(href="/catalog/bookinstances") 实例列表
+        ul
+          li 
+            a(href='/catalog/author/create') 新增作者
+          li 
+            a(href='/catalog/genre/create') 新增类别
+          li 
+            a(href='/catalog/book/create') 新增书本
+          li 
+            a(href='/catalog/bookinstance/create') 新增实例(副本)
+    .content-wrap
+      block content

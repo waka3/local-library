@@ -1,0 +1,97 @@
+@import 'nib'
+/******全局颜色参数设置******/
+$theme = #337ab7;
+$theme-sub = #2e6da4;
+$gray-3 = #333;
+$gray-6 = #666;
+$gray-9 = #999;
+$gray-e = #eee;
+$gray-c = #ccc;
+$gray-d = #ddd;
+$gray-f2 = #f2f2f2;
+$gray-f8 = #f8f8f8;
+$border = 1px solid $gray-e
+
+/******浏览器样式重置******/
+ul li, dl dt
+  list-style none
+body,html,ul,dl,p,h1,h2,h3,h4,h5,h6
+  margin: 0
+  padding: 0
+strong
+  font-weight bold
+/******全局通用样式******/
+.iconfont
+  font-size: 24px
+body
+  background $gray-f8
+.siteTitle
+  height 100px
+  line-height: 100px
+  vertical-align: middle
+  text-align: center
+  background $theme
+  margin: 0px
+  color: white
+
+.sidebar-nav
+  position: fixed
+  top: 120px
+  left: 20px
+  bottom: 20px
+  width: 200px
+  background: $gray-d
+  padding: 10px
+  ul
+    margin-bottom: 20px
+    li
+      text-align left
+      background-color $theme
+      border-color $theme-sub
+      border-bottom: $border
+      >a
+        display: block
+        width: 100%
+        color white
+        padding: 10px
+        &:hover
+          background: $theme-sub
+.content-wrap
+  position: absolute
+  top: 120px
+  left: 240px
+  bottom: 20px
+  width: calc(100% - 260px);
+  padding: 20px
+  background: $gray-d
+  h1,h2,h3,h4,h5,h6
+    color: $gray-3
+  h1
+    font-size: 24px
+    line-height: 54px
+  h2
+    font-size: 20px
+    line-height: 44px
+  h3
+    font-size: 18px
+    line-height: 34px
+  h4
+    font-size: 16px
+    line-height: 34px
+  p
+    line-height: 34px
+    text-indent: 2em
+  ul>li, dl dt
+      line-height: 34px
+      font-size: 14px
+      &:before
+        display: inline-block
+        content: ''
+        width: 8px
+        height: 8px
+        background: $gray-9
+        border-radius: 50%
+        margin-right: 5px
+        margin-top: 5px
+  
+
